@@ -1,0 +1,35 @@
+#pragma once
+// Airports shown on the radar (southern Norway + nearby). ICAO, IATA, short name, lat, lon.
+struct Airport { const char* icao; const char* iata; const char* name; float lat, lon; };
+static const Airport AIRPORTS[] = {
+    {"ENGM", "OSL", "Gardermoen",     60.1939f, 11.1004f},
+    {"ENTO", "TRF", "Torp",           59.1867f, 10.2586f},
+    {"ENRY", "RYG", "Rygge",          59.3789f, 10.7856f},
+    {"ENKJ", "",    "Kjeller",        59.9692f, 11.0361f},
+    {"ENEG", "",    "Eggemoen",       60.2172f, 10.3250f},
+    {"ENNO", "NTB", "Notodden",       59.5657f,  9.2123f},
+    {"ENHA", "HMR", "Hamar",          60.8181f, 11.0680f},
+    {"ENFG", "VDB", "Fagernes",       61.0156f,  9.2882f},
+    {"ENDI", "DLD", "Dagali",         60.4173f,  8.5184f},
+    {"ENSN", "SKE", "Skien",          59.1850f,  9.5670f},
+    {"ENKB", "KSU", "Kristiansund",   63.1118f,  7.8245f},
+    {"ENVA", "TRD", "Trondheim",      63.4578f, 10.9240f},
+    {"ENBR", "BGO", "Bergen",         60.2934f,  5.2181f},
+    {"ENZV", "SVG", "Stavanger",      58.8767f,  5.6378f},
+    {"ENCN", "KRS", "Kristiansand",   58.2042f,  8.0853f},
+    {"ENAL", "AES", "Alesund",        62.5625f,  6.1197f},
+    {"ENML", "MOL", "Molde",          62.7447f,  7.2625f},
+    {"ENRO", "RRS", "Roros",          62.5784f, 11.3423f},
+    {"ENFL", "FRO", "Floro",          61.5836f,  5.0247f},
+    {"ENSG", "SOG", "Sogndal",        61.1561f,  7.1378f},
+    {"ESGG", "GOT", "Goteborg",       57.6628f, 12.2798f},
+    {"ESSA", "ARN", "Stockholm Arl.", 59.6519f, 17.9186f},
+    {"ESKN", "NYO", "Skavsta",        58.7886f, 16.9122f},
+    {"ESOK", "KSD", "Karlstad",       59.4447f, 13.3374f},
+    {"ESOW", "VST", "Vasteras",       59.5894f, 16.6336f},
+    {"ESGJ", "JKG", "Jonkoping",      57.7576f, 14.0687f},
+    {"EKCH", "CPH", "Copenhagen",     55.6180f, 12.6508f},
+    {"EKBI", "BLL", "Billund",        55.7403f,  9.1518f},
+    {"EKYT", "AAL", "Aalborg",        57.0928f,  9.8492f},
+};
+#define AIRPORT_COUNT (sizeof(AIRPORTS)/sizeof(AIRPORTS[0]))

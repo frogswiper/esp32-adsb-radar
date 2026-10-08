@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ESP32 ADS-B Radar — Installer</title>
+  <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #f5f6fa;
+      --surface: #ffffff;
+      --accent:  #4f6ef7;
+      --accent2: #6e88f9;
+      --text:    #1a1a2e;
+      --muted:   #6b7280;
+      --border:  #e5e7eb;
+      --radius:  14px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      padding: 18px 32px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo { font-size: 1.5rem; line-height: 1; }
+    header h1 { font-size: 1.1rem; font-weight: 700; }
+    header .version {
+      margin-left: auto;
+      font-size: .8rem;
+      color: var(--muted);
+      background: var(--bg);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 560px;
+      padding: 32px 16px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 28px 28px 20px;
+      text-align: center;
+    }
+    .hero-icon { font-size: 4rem; line-height: 1; margin-bottom: 16px; }
+    .hero h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+    .hero p {
+      color: var(--muted);
+      font-size: .95rem;
+      line-height: 1.5;
+      max-width: 380px;
+      margin: 0 auto 24px;
+    }
+
+    esp-web-install-button {
+      --esp-tools-button-color: var(--accent);
+      --esp-tools-button-text-color: #fff;
+    }
+    esp-web-install-button::part(button) {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: .01em;
+      transition: opacity .2s, transform .1s;
+      box-shadow: 0 4px 14px rgba(79,110,247,.35);
+    }
+    esp-web-install-button::part(button):hover {
+      opacity: .9;
+      transform: translateY(-1px);
+    }
+
+    .steps { padding: 20px 24px 24px; }
+    .steps h3 {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .step { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+    .step:last-child { margin-bottom: 0; }
+    .step-num {
+      min-width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-body strong { display: block; font-size: .9rem; margin-bottom: 2px; }
+    .step-body span { font-size: .85rem; color: var(--muted); line-height: 1.4; }
+
+    .actions {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .actions h3 {
+      width: 100%;
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      font-size: .875rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text);
+      transition: border-color .2s, background .2s;
+    }
+    .action-btn:hover { border-color: var(--accent); background: #f0f3ff; }
+    .action-btn.danger:hover { border-color: #ef4444; background: #fff5f5; color: #ef4444; }
+
+    #console-wrap {
+      display: none;
+      padding: 0 24px 16px;
+      border-top: 1px solid var(--border);
+    }
+    #console-wrap.open { display: block; }
+    #console-wrap h4 {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin: 12px 0 8px;
+    }
+    #console-log {
+      background: #0f1117;
+      color: #a8ff78;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: .78rem;
+      line-height: 1.5;
+      border-radius: 8px;
+      padding: 12px;
+      height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .console-controls { display: flex; gap: 8px; margin-top: 8px; }
+    .console-controls input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      font-size: .85rem;
+      outline: none;
+    }
+    .console-controls input:focus { border-color: var(--accent); }
+    .console-controls button {
+      padding: 8px 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .info {
+      padding: 16px 24px;
+      background: #f9fafb;
+      border-radius: 0 0 var(--radius) var(--radius);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .info-item { display: flex; flex-direction: column; gap: 2px; }
+    .info-item .key {
+      font-size: .7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--muted);
+    }
+    .info-item .val { font-size: .85rem; font-weight: 600; color: var(--text); }
+    .hero .board-note { margin: 18px auto 0; max-width: 400px; font-size: .85rem; line-height: 1.5; color: var(--muted);
+                  background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; }
+    .hero .board-note a { color: var(--accent); font-weight: 600; }
+    .step-body a, .info-item .val a { color: var(--accent); }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: .8rem;
+      padding: 0 0 32px;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="logo">🛩️</span>
+  <h1>ESP32 ADS-B Radar</h1>
+  <span class="version">v1.3.3</span>
+</header>
+
+<main>
+
+  <div class="card">
+    <div class="hero">
+      <div class="hero-icon">📡</div>
+      <h2>Install ADS-B Radar</h2>
+      <p>Flash firmware directly from your browser.
+         No drivers, no IDE required. Works on Chrome and Edge.</p>
+      <esp-web-install-button manifest="manifest.json">
+        <span slot="unsupported">
+          ⚠ Web Serial is not supported in this browser.
+          Please use <strong>Chrome</strong> or <strong>Edge</strong>.
+        </span>
+        <span slot="not-allowed">
+          ⚠ This page must be served over HTTPS (or localhost) to use Web Serial.
+        </span>
+      </esp-web-install-button>
+      <p class="board-note">Need the board? Get the <a href="https://www.aliexpress.com/item/1005006729377800.html" target="_blank" rel="noopener">JC4827W543 on AliExpress</a>.
+         Choose the <strong>capacitive-touch version (JC4827W543C)</strong>; touch won't work on the resistive one.</p>
+    </div>
+
+    <div class="steps">
+      <h3>What happens next</h3>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Connect your device</strong>
+          <span>Plug the <a href="https://www.aliexpress.com/item/1005006729377800.html" target="_blank" rel="noopener">JC4827W543C</a> into USB, click Install, select the COM port.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Firmware is flashed</strong>
+          <span>Takes ~30 seconds. The device will restart automatically.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Enter your WiFi</strong>
+          <span>Tap the ⚙ icon in the corner of the radar. Type your WiFi name and password on the on-screen keyboard and tap Connect &amp; Save.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>Location is found automatically</strong>
+          <span>The radar centres itself on your public-IP location. Override it with a continent / country / city picker or coordinates in Settings. No account or API key needed.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <strong>Done!</strong>
+          <span>Live aircraft within 10–400 km on a green HUD radar, the four closest with route and airline, local weather and wind. Then open <strong>http://esp32-radar.local</strong> on your phone for the web panel: all settings, alerts, stats, push notifications, Home Assistant and over-the-air updates.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <h3>Device tools</h3>
+      <button class="action-btn" id="btn-console" onclick="toggleConsole()">
+        &#9654; Serial console
+      </button>
+      <button class="action-btn danger" id="btn-reset" onclick="resetDevice()">
+        &#8635; Reset device
+      </button>
+    </div>
+
+    <div id="console-wrap">
+      <h4>Serial output</h4>
+      <div id="console-log">Waiting for connection…</div>
+      <div class="console-controls">
+        <input id="console-input" type="text" placeholder="Send command…" onkeydown="if(event.key==='Enter')sendCmd()">
+        <button onclick="sendCmd()">Send</button>
+      </div>
+    </div>
+
+    <div class="info">
+      <div class="info-item">
+        <span class="key">Board</span>
+        <span class="val"><a href="https://www.aliexpress.com/item/1005006729377800.html" target="_blank" rel="noopener">JC4827W543C</a> (ESP32-S3, capacitive touch)</span>
+      </div>
+      <div class="info-item">
+        <span class="key">Display</span>
+        <span class="val">4.3&Prime; 480×272 QSPI</span>
+      </div>
+      <div class="info-item">
+        <span class="key">Data</span>
+        <span class="val">adsb.lol / adsb.fi, adsb.im routes, Open-Meteo</span>
+      </div>
+      <div class="info-item">
+        <span class="key">Source</span>
+        <span class="val"><a href="https://github.com/frogswiper/esp32-adsb-radar" target="_blank" rel="noopener">github.com/frogswiper/esp32-adsb-radar</a></span>
+      </div>
+      <div class="info-item">
+        <span class="key">Firmware</span>
+        <span class="val">v1.3.3</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Powered by <a href="https://esphome.github.io/esp-web-tools/" target="_blank">esp-web-tools</a>
+  &nbsp;·&nbsp;
+  <a href="https://frogswiper.cloud" target="_blank">frogswiper.cloud</a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/frogswiper/esp32-adsb-radar" target="_blank" rel="noopener">Source on GitHub</a>
+</footer>
+
+<script>
+let port = null;
+let reader = null;
+let writer = null;
+let consoleOpen = false;
+
+const log = document.getElementById('console-log');
+
+function appendLog(text) {
+  log.textContent += text;
+  log.scrollTop = log.scrollHeight;
+}
+
+async function openPort() {
+  if (port) return true;
+  try {
+    port = await navigator.serial.requestPort();
+    await port.open({ baudRate: 115200 });
+    startReading();
+    appendLog('[connected]\n');
+    return true;
+  } catch (e) {
+    appendLog('[error: ' + e.message + ']\n');
+    port = null;
+    return false;
+  }
+}
+
+async function startReading() {
+  const decoder = new TextDecoderStream();
+  port.readable.pipeTo(decoder.writable);
+  reader = decoder.readable.getReader();
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      appendLog(value);
+    }
+  } catch (e) {
+    appendLog('[stream ended]\n');
+  }
+}
+
+async function toggleConsole() {
+  consoleOpen = !consoleOpen;
+  document.getElementById('console-wrap').classList.toggle('open', consoleOpen);
+  document.getElementById('btn-console').textContent =
+    consoleOpen ? '⏹ Close console' : '▶ Serial console';
+  if (consoleOpen) {
+    log.textContent = '';
+    await openPort();
+  }
+}
+
+async function sendCmd() {
+  const input = document.getElementById('console-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  if (!port) { await openPort(); if (!port) return; }
+  const encoder = new TextEncoderStream();
+  encoder.readable.pipeTo(port.writable);
+  writer = encoder.writable.getWriter();
+  await writer.write(text + '\n');
+  writer.close();
+  writer = null;
+  appendLog('> ' + text + '\n');
+}
+
+async function resetDevice() {
+  if (!port) {
+    const ok = await openPort();
+    if (!ok) return;
+  }
+  try {
+    await port.setSignals({ dataTerminalReady: false });
+    await new Promise(r => setTimeout(r, 100));
+    await port.setSignals({ dataTerminalReady: true });
+    appendLog('[device reset]\n');
+  } catch (e) {
+    appendLog('[reset error: ' + e.message + ']\n');
+  }
+}
+</script>
+</body>
+</html>
